@@ -1,36 +1,44 @@
-import { useEffect, useRef, useState } from "react";
+import { useState, useEffect, useRef } from 'react';
 
-export const useFetch = (url) => {
 
+export const useFetch = ( url ) => {
+    
     const isMounted = useRef(true);
+    const [state, setState] = useState({ data: null, loading: true, error: null });
 
-    const [state, setState] = useState({data:null,loading:true,error:null});
-
-    useEffect(()=>{
-        return ()=>{
-            isMounted.current=false;
+    useEffect( () => {
+        return () => {
+            isMounted.current = false;
         }
-    },[]);
+    }, [])
 
-    useEffect(()=>{
 
-        setState({data:null,loading:true,error:null});
+    useEffect( () => {
 
-        fetch(url)
-        .then(resp=>resp.json())
-        .then(data=>{
+        setState({ data: null, loading: true, error: null });
 
-            if (isMounted.current) {
+        fetch( url )
+            .then( resp => resp.json() )
+            .then( data => {
+
+                if ( isMounted.current ) {
+                    setState({
+                        loading: false,
+                        error: null,
+                        data
+                    });
+                }
+
+            })
+            .catch( () => {
                 setState({
-                    loading:false,
-                    error:null,
-                    data
-                });
-            }
+                    data: null,
+                    loading: false,
+                    error: 'No se pudo cargar la info'
+                })
+            })
 
-        });
-    },[url]);
+    },[url])
 
     return state;
-
 }
